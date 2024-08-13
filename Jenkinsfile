@@ -20,21 +20,21 @@ pipeline {
        stage('Build Image') {
             steps { 
                 sh 'docker build -t reactimage:v1 .'
-                sh 'docker tag reactimage:v1 kousalyag/jenkinsreact:latest'
+                sh 'docker tag reactimage:v1 venkatesh7708/capstone-pipeline:v1'
             }    
        }
        stage('Docker login') {
             steps { 
-                withCredentials([usernamePassword(credentialsId: 'Dockercred', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                withCredentials([usernamePassword(credentialsId: 'DockerCred', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
                 sh "echo $PASS | docker login -u $USER --password-stdin"
-                sh 'docker push kousalyag/jenkinsreact:latest'
+                sh 'docker push venkatesh7708/capstone-pipeline:v1'
                 }
             }
        }
        stage('Deploy') {
             steps {  
                 script {
-                   def dockerCmd = 'docker run -itd --name My-first-container -p 80:5000 kousalyag/jenkinsreact:latest'
+                   def dockerCmd = 'docker run -itd --name My-first-container -p 80:5000 venkatesh7708/capstone-pipeline:v1'
                    sshagent(['sshkeypair']) {
                    sh "ssh -o StrictHostKeyChecking=no ubuntu@54.86.64.88 ${dockerCmd}"
                    }
@@ -48,10 +48,10 @@ pipeline {
          }  
          success {   
             echo "========Deploying executed successfully========"
-            emailext attachLog: true, body: "<b>Example</b><br>Project: ${env.JOB_NAME}", from: 'kousigowthaman99@gmail.com',compressLog: true, mimeType: 'text/html', replyTo: '', subject: "Deploy Successfull Project ${env.JOB_NAME}", to: "kousigowthaman99@gmail.com";
+            emailext attachLog: true, body: "<b>Example</b><br>Project: ${env.JOB_NAME}", from: 'dogcat1130@gmail.com',compressLog: true, mimeType: 'text/html', replyTo: '', subject: "Deploy Successfull Project ${env.JOB_NAME}", to: "dogcat1130@gmail.com";
          }  
          failure {  
-             mail bcc: '', body: "<b>Example</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} <br> Stage Name: $last_started <br> URL de build: ${env.BUILD_URL}", cc: 'ramji013@gmail.com', charset: 'UTF-8', from: 'kousigowthaman99@gmail.com', mimeType: 'text/html', replyTo: '', subject: "Deployment failed for Project -> ${env.JOB_NAME}", to: "kousigowthaman99@gmail.com";  
+             mail bcc: '', body: "<b>Example</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} <br> Stage Name: $last_started <br> URL de build: ${env.BUILD_URL}", cc: 'kousigowthaman99@gmail.com', charset: 'UTF-8', from: 'dogcat1130@gmail.com', mimeType: 'text/html', replyTo: '', subject: "Deployment failed for Project -> ${env.JOB_NAME}", to: "dogcat1130@gmail.com";  
          }  
          unstable { 
              echo 'This will run only if the run was marked as unstable'  
